@@ -1,0 +1,3 @@
+SConscript(['../lib/SConstruct'])
+env = Environment(CPPPATH='../lib')
+env.Program('hello', 'main.cpp', LIBS=['hello'], LIBPATH='../lib')
