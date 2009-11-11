@@ -1,6 +1,8 @@
 .sconsign.dblite
+*~
 *.o
 *.os
+*.so
 cli/hello
 cli/ppcmain
 cli/i386main
