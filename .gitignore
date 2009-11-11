@@ -1,6 +1,9 @@
 .sconsign.dblite
 *.o
 cli/hello
+cli/ppcmain
+cli/i386main
+cli/x86_64main
 lib/*.a
 *.pbxuser
 *.perspectivev3
