@@ -1,3 +1,21 @@
+def UniversalStaticProgram(target, source, env):
+   envs = [env.Clone(), env.Clone(), env.Clone()]
+
+   envs[0].Append(CCFLAGS="-arch ppc", LINKFLAGS="-arch ppc", OBJPREFIX='ppc')
+   envs[1].Append(CCFLAGS="-arch i386", LINKFLAGS="-arch i386", OBJPREFIX='i386')
+   envs[2].Append(CCFLAGS="-arch x86_64", LINKFLAGS="-arch x86_64", OBJPREFIX='x86_64')
+
+   progs = []
+
+   for environ in envs:
+      objs = environ.Object(source)
+      progs += environ.Program(objs, LIBS=['hello'], LIBPATH='../lib')
+
+   env.Depends(target, progs)
+   env.Command(target, progs, "lipo -create $SOURCES -output $TARGET" )
+
+   return None;
+
 SConscript(['../lib/SConstruct'])
 env = Environment(CPPPATH='../lib')
-env.Program('hello', 'main.cpp', LIBS=['hello'], LIBPATH='../lib')
+UniversalStaticProgram('hello', 'main.cpp', env)
