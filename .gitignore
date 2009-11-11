@@ -1,5 +1,6 @@
 .sconsign.dblite
 *.o
+*.os
 cli/hello
 cli/ppcmain
 cli/i386main
@@ -8,4 +9,8 @@ lib/*.a
 *.pbxuser
 *.perspectivev3
 plugin/mac/Hello/build/
-
+plugin/mac/Hello/Hello
+plugin/mac/Hello/Hello.plugin/
+plugin/mac/Hello/i386plugin
+plugin/mac/Hello/ppcplugin
+plugin/mac/Hello/x86_64plugin
