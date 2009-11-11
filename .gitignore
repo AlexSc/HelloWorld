@@ -1,5 +1,5 @@
 .sconsign.dblite
 *.o
 cli/hello
-lib/libhello.a
+lib/*.a
 
