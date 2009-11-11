@@ -2,4 +2,7 @@
 *.o
 cli/hello
 lib/*.a
+*.pbxuser
+*.perspectivev3
+plugin/mac/Hello/build/
 
