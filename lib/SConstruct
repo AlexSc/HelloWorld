@@ -1,21 +1,5 @@
-def UniversalStaticLib(target, source, env):
-   envs = [env.Clone(), env.Clone(), env.Clone()]
-
-   envs[0].Append(CCFLAGS ="-arch ppc", OBJPREFIX='ppc')
-   envs[1].Append(CCFLAGS="-arch i386", OBJPREFIX='i386')
-   envs[2].Append(CCFLAGS="-arch x86_64", OBJPREFIX='x86_64')
-
-   libs = []
-
-   for environ in envs:
-      objs = environ.Object(source)
-      libs += environ.StaticLibrary(objs)
-
-   env.Depends(target, libs)
-   env.Command(target, libs, "lipo -create $SOURCES -output $TARGET" )
-
-   return None;
-
+SConscript(['../scons/Universal'])
 
 files = ['hello.cpp']
-UniversalStaticLib('libhello.a', files, Environment())
+env = Environment()
+env.DoUniversal('StaticLibrary', env['LIBPREFIX'] + 'hello' + env['LIBSUFFIX'], files)
