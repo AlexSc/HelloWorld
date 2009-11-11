@@ -1,1 +1,17 @@
-StaticLibrary('hello.cpp')
+files = ['hello.cpp']
+envppc = Environment(CCFLAGS ="-arch ppc")
+envi386 = Environment(CCFLAGS="-arch i386")
+envx8664 = Environment(CCFLAGS="-arch x86_64")
+
+files_ppc = envppc.Object(files, OBJPREFIX='ppc')
+ppclib = StaticLibrary('hello_ppc', files_ppc)
+
+files_i386 = envi386.Object(files, OBJPREFIX='i386')
+i386lib = StaticLibrary('hello_i386', files_i386)
+
+files_x86_64 = envx8664.Object(files, OBJPREFIX='x86_64')
+x8664lib = StaticLibrary('hello_x86_64', files_x86_64)
+
+Depends("libhello.a", [ppclib, i386lib, x8664lib])
+
+Command("libhello.a", [ppclib, i386lib, x8664lib], "lipo -create $SOURCES -output $TARGET" )
