@@ -10,6 +10,7 @@
 #include "plugin.h"
 #include "hello.h"
 #include <string>
+#include <string.h>
 #include <stdio.h>
 
 static NPNetscapeFuncs NPNFuncs;
@@ -114,7 +115,11 @@ void pluginInvalidate ()
    // objects.
 }
 
+#ifdef HW_LINUX
+NPError NP_Initialize(NPNetscapeFuncs *pFuncs, NPPluginFuncs* outFuncs)
+#else
 NPError NP_Initialize(NPNetscapeFuncs *pFuncs)
+#endif
 {
 	fprintf(stderr, "[HelloWorld] - NP_Initialize\n");
    if (pFuncs == NULL)
@@ -139,15 +144,25 @@ NPError NP_Initialize(NPNetscapeFuncs *pFuncs)
 //   }
 
    NPNFuncs = *pFuncs;
+
+#ifdef HW_LINUX
+   NP_GetEntryPoints(outFuncs);
+#endif
    
    fprintf(stderr, "[HelloWorld] - Sweet Success\n");
 
    return NPERR_NO_ERROR;
 }
 
+const char* NP_GetMIMEDescription()
+{
+	return "application/x-hello-world::Hello World Plugin";
+}
+
 NPError NP_GetEntryPoints(NPPluginFuncs* pFuncs)
 {
    if (pFuncs == NULL) {
+      fprintf(stderr, "[HelloWorld] - NP_GetEntryPoints no table\n");
       return NPERR_INVALID_FUNCTABLE_ERROR;
    }
 
@@ -155,6 +170,7 @@ NPError NP_GetEntryPoints(NPPluginFuncs* pFuncs)
    if (pFuncs->size == 0)
       pFuncs->size = sizeof(NPPluginFuncs);
    if (pFuncs->size < sizeof(NPPluginFuncs)) {
+	   fprintf(stderr, "[HelloWorld] - NP_GetEntryPoints table too small\n");
       return NPERR_INVALID_FUNCTABLE_ERROR;
    }
    
@@ -264,6 +280,20 @@ NPError NPP_GetValue(NPP instance, NPPVariable variable, void *value)
       NPNFuncs.retainobject(obj);
       void **v = (void**)value;
       *v = obj;
+      return NPERR_NO_ERROR;
+   }
+
+   if (variable == NPPVpluginNameString)
+   {
+		char** val = (char**)value;
+      *val = "Hello World Plugin";
+      return NPERR_NO_ERROR;
+   }
+
+   if (variable == NPPVpluginDescriptionString)
+   {
+		char** val = (char**)value;
+      *val = "Hello World Plugin";
       return NPERR_NO_ERROR;
    }
 
