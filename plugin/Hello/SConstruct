@@ -94,9 +94,9 @@ def TOOL_BUNDLE(env):
         # So just make it available as a method of Environment.
         SConsEnvironment.MakeBundle = MakeBundle
 
-SConscript(['../../../scons/Universal'])
+SConscript(['../../scons/Universal'])
 
-env = Environment(CPPPATH=['../../inc', '../../../lib'], LIBPATH='../../../lib')
+env = Environment(CPPPATH=['../inc', '../../lib'], LIBPATH='../../lib')
 if env['PLATFORM'] == 'posix':
 	env.Append(CPPDEFINES="HW_LINUX")
 

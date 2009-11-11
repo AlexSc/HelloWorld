@@ -10,9 +10,9 @@ cli/x86_64main
 lib/*.a
 *.pbxuser
 *.perspectivev3
-plugin/mac/Hello/build/
-plugin/mac/Hello/Hello
-plugin/mac/Hello/Hello.plugin/
-plugin/mac/Hello/i386plugin
-plugin/mac/Hello/ppcplugin
-plugin/mac/Hello/x86_64plugin
+plugin/Hello/build/
+plugin/Hello/Hello
+plugin/Hello/Hello.plugin/
+plugin/Hello/i386plugin
+plugin/Hello/ppcplugin
+plugin/Hello/x86_64plugin
