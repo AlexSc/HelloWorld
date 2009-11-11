@@ -1,5 +1,45 @@
 from SCons.Script import *
 from SCons.Script.SConscript import SConsEnvironment
+from string import Template
+
+def subst_file(target, source, env):
+
+    # Read file
+    f = open(source, 'r')
+    try:
+        contents = f.read()
+    finally:
+        f.close()
+
+    # Substitute
+    t = Template(contents)
+    contents = t.substitute(env['SUBST_DICT'])
+    
+    # Write file
+    f = open(target, 'w')
+    try:
+        f.write(contents)
+    finally:
+        f.close()
+
+def subst_in_file(target, source, env):
+    # Substitute in the files
+    for (t, s) in zip(target, source):
+        subst_file(str(t), str(s), env)
+
+    return 0
+
+
+def subst_string(target, source, env):
+    items = ['Substituting vars from %s to %s' % (str(s), str(t))
+             for (t, s) in zip(target, source)]
+
+    return '\n'.join(items)
+
+# Create builders
+def TOOL_SUBST(env):
+    subst_in_file_action = SCons.Action.Action(subst_in_file, subst_string)
+    env['BUILDERS']['SubstInFile'] = Builder(action=subst_in_file_action)
 
 def TOOL_BUNDLE(env):
     """defines env.MakeBundle() for installing a bundle into its dir.
@@ -13,6 +53,7 @@ def TOOL_BUNDLE(env):
          """
     if 'BUNDLE' in env['TOOLS']: return
     if env['PLATFORM'] == 'darwin':
+        TOOL_SUBST(env)
         # Common type codes are BNDL for generic bundle and APPL for application.
         def MakeBundle(env, bundledir, app,
                        info_plist,
@@ -39,7 +80,10 @@ def TOOL_BUNDLE(env):
             env.Clean(app, bundledir)
 
             env.Install(bundledir+'/Contents/MacOS', app)
-            env.Install(bundledir+'/Contents', info_plist)
+            env.SubstInFile(bundledir+'/Contents/' + info_plist, info_plist, 
+                            SUBST_DICT={'EXECUTABLE_NAME':app,
+                                        'PRODUCT_NAME':app})
+            
             if SCons.Util.is_String(resources):
             	resources = [resources]
             for r in resources:
