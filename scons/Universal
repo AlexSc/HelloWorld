@@ -9,8 +9,7 @@ def DoUniversal(env, command, target, source, *args, **kw):
    outs = []
 
    for environ in envs:
-      objs = environ.Object(source)
-      outs += environ['BUILDERS'][command](environ, target=None, source=objs, *args, **kw)
+      outs += environ['BUILDERS'][command](environ, target=None, source=source, *args, **kw)
 
    env.Command(target, outs, "lipo -create $SOURCES -output $TARGET" )
 
