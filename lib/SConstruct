@@ -1,5 +1,39 @@
+class Config:
+   allConfigs = {}
+   default = 'none'
+   def __init__(self, name, default=False, **kw):
+      self.name = name
+      self.opts = kw
+      Config.allConfigs[self.name] = self
+      if default:
+      	Config.default = self.name      	
+
+   def modenv(self, env):
+      newEnv = env.Clone()
+      newEnv.Prepend(**self.opts)
+      return newEnv
+
+dbg = Config('dbg', CCFLAGS=['-g', '-O0'], default=True, LIBSUFFIX='_DEBUG')
+optdbg = Config('optdbg', CCFLAGS=['-g', '-02'], LIBSUFFIX='_OPTIMIZED')
+release = Config('release', CCFLAGS=['-02'])
+
+vars = Variables()
+vars.Add(ListVariable('cfg', 'Build configurations', Config.default, Config.allConfigs.keys()))
+env = Environment(variables=vars)
+configs = env.subst('${cfg}').split()
+
+# Begin code that does stuff
 SConscript(['../scons/Universal'])
 
 files = ['hello.cpp']
-env = Environment()
-env.DoUniversal('StaticLibrary', env['LIBPREFIX'] + 'hello' + env['LIBSUFFIX'], files)
+
+for config in configs:
+   outdir = 'build/' + config + '/'
+   newFiles = []
+   for file in files:
+      newFiles.append(outdir + file)
+   newEnv = Config.allConfigs[config].modenv(env)
+   target = newEnv['LIBPREFIX'] + 'hello' + newEnv['LIBSUFFIX']
+   newEnv.VariantDir(outdir, '.', duplicate=0)
+   newEnv.DoUniversal('StaticLibrary', outdir + target, newFiles)
+   newEnv.Command(target, outdir + target, Copy('$TARGET', '$SOURCE'))
