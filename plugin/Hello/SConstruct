@@ -97,13 +97,20 @@ def TOOL_BUNDLE(env):
 SConscript(['../../scons/Universal'])
 
 env = Environment(CPPPATH=['../inc', '../../lib'], LIBPATH='../../lib')
-if env['PLATFORM'] == 'posix':
-	env.Append(CPPDEFINES="HW_LINUX")
+isLinux = env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'linux'
+isOSX = env['PLATFORM'] == 'darwin'
+cppdefines = []
+if isLinux or isOSX:
+   cppdefines += ["XP_UNIX"]
+if isOSX:
+   cppdefines += ["XP_MACOSX"]
+   
+env.Append(CPPDEFINES=cppdefines)
 
 env.DoUniversal('LoadableModule', 'Hello', 'plugin.cpp', LIBS='hello')
 
 TOOL_BUNDLE(env)
-if env['PLATFORM'] == 'darwin':
+if isOSX:
    env.MakeBundle('Hello.plugin', 'Hello',
                  'Info.plist',
                  typecode='BRPL', creator='????',

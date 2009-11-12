@@ -81,9 +81,9 @@ bool pluginSetProperty (NPObject *obj, NPIdentifier name, const NPVariant *varia
 void FillString(const std::string& src, NPVariant* variant)
 {
    variant->type = NPVariantType_String;
-   variant->value.stringValue.UTF8Length = static_cast<uint32_t>(src.length());
-   variant->value.stringValue.UTF8Characters = reinterpret_cast<NPUTF8 *>(NPNFuncs.memalloc(src.size()));
-   memcpy((void*)variant->value.stringValue.UTF8Characters, src.c_str(), src.size());   
+   variant->value.stringValue.utf8length = static_cast<uint32_t>(src.length());
+   variant->value.stringValue.utf8characters = reinterpret_cast<NPUTF8 *>(NPNFuncs.memalloc(src.size()));
+   memcpy((void*)variant->value.stringValue.utf8characters, src.c_str(), src.size());   
 }
 
 // handle our plugin methods using standard np plugin conventions.
@@ -115,7 +115,7 @@ void pluginInvalidate ()
    // objects.
 }
 
-#ifdef HW_LINUX
+#ifdef XP_UNIX
 NPError NP_Initialize(NPNetscapeFuncs *pFuncs, NPPluginFuncs* outFuncs)
 #else
 NPError NP_Initialize(NPNetscapeFuncs *pFuncs)
@@ -133,19 +133,21 @@ NPError NP_Initialize(NPNetscapeFuncs *pFuncs)
    	fprintf(stderr, "[HelloWorld] - NPERR_INCOMPATIBLE_VERSION_ERROR\n");
       return NPERR_INCOMPATIBLE_VERSION_ERROR;
    }
+   
+   fprintf(stderr, "[HelloWorld] - I am version %i, and host is version %i\n", NP_VERSION_MINOR, (int)((char)pFuncs->version));
 
    // Safari sets the pfuncs size to 0
-//   if (pFuncs->size == 0)
-//      pFuncs->size = sizeof(NPNetscapeFuncs);
-//   if (pFuncs->size < sizeof (NPNetscapeFuncs))
-//   {
-//   	fprintf(stderr, "[HelloWorld] - Too Small, %i vs %lu\n", pFuncs->size, sizeof(NPNetscapeFuncs));
-//      return NPERR_INVALID_FUNCTABLE_ERROR;
-//   }
+   if (pFuncs->size == 0)
+      pFuncs->size = sizeof(NPNetscapeFuncs);
+   if (pFuncs->size < sizeof (NPNetscapeFuncs))
+   {
+   	fprintf(stderr, "[HelloWorld] - Too Small, %i vs %lu\n", pFuncs->size, sizeof(NPNetscapeFuncs));
+      return NPERR_INVALID_FUNCTABLE_ERROR;
+   }
 
    NPNFuncs = *pFuncs;
 
-#ifdef HW_LINUX
+#ifndef XP_MACOSX
    NP_GetEntryPoints(outFuncs);
 #endif
    
@@ -154,7 +156,7 @@ NPError NP_Initialize(NPNetscapeFuncs *pFuncs)
    return NPERR_NO_ERROR;
 }
 
-const char* NP_GetMIMEDescription()
+char* NP_GetMIMEDescription()
 {
 	return "application/x-hello-world::Hello World Plugin";
 }
@@ -193,6 +195,25 @@ NPError NP_GetEntryPoints(NPPluginFuncs* pFuncs)
    pFuncs->javaClass     = NULL;
 
    return NPERR_NO_ERROR;
+}
+
+NPError NP_GetValue(void*, NPPVariable variable, void* value)
+{
+   if (variable == NPPVpluginNameString)
+   {
+		const char** val = (const char**)value;
+      *val = "Hello World Plugin";
+      return NPERR_NO_ERROR;
+   }
+
+   if (variable == NPPVpluginDescriptionString)
+   {
+		const char** val = (const char**)value;
+      *val = "Hello World Plugin";
+      return NPERR_NO_ERROR;
+   }
+   
+   return NPERR_INVALID_PARAM;
 }
 
 // Called to create a new instance of the plugin
@@ -280,20 +301,6 @@ NPError NPP_GetValue(NPP instance, NPPVariable variable, void *value)
       NPNFuncs.retainobject(obj);
       void **v = (void**)value;
       *v = obj;
-      return NPERR_NO_ERROR;
-   }
-
-   if (variable == NPPVpluginNameString)
-   {
-		char** val = (char**)value;
-      *val = "Hello World Plugin";
-      return NPERR_NO_ERROR;
-   }
-
-   if (variable == NPPVpluginDescriptionString)
-   {
-		char** val = (char**)value;
-      *val = "Hello World Plugin";
       return NPERR_NO_ERROR;
    }
 
