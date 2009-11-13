@@ -1,0 +1,10 @@
+# Begin code that does stuff
+import Universal
+import Config
+import DefaultConfig
+
+Import('env')
+
+files = ['hello.cpp']
+ret = env.Build('StaticLibrary', 'hello', files)
+Return('ret')

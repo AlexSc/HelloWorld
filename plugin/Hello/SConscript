@@ -93,10 +93,13 @@ def TOOL_BUNDLE(env):
         # This is not a regular Builder; it's a wrapper function.
         # So just make it available as a method of Environment.
         SConsEnvironment.MakeBundle = MakeBundle
+        
+import Config
 
-SConscript(['../../scons/Universal'])
+Import('env')
+Import('libs')
 
-env = Environment(CPPPATH=['../inc', '../../lib'], LIBPATH='../../lib')
+env.Append(CPPPATH=['../inc', '../../lib'], LIBPATH='../../lib')
 isLinux = env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'linux'
 isOSX = env['PLATFORM'] == 'darwin'
 cppdefines = []
@@ -106,13 +109,17 @@ if isOSX:
    cppdefines += ["XP_MACOSX"]
    
 env.Append(CPPDEFINES=cppdefines)
-
-env.DoUniversal('LoadableModule', 'Hello', 'plugin.cpp', LIBS='hello')
+ret = env.Build('LoadableModule', 'Hello', 'plugin.cpp', LIBS_CFG=libs[1])
 
 TOOL_BUNDLE(env)
 if isOSX:
-   env.MakeBundle('Hello.plugin', 'Hello',
-                 'Info.plist',
-                 typecode='BRPL', creator='????',
-                 resources="English.lproj")
+   configs = env.subst('${cfg}').split()
+   for config in configs:
+      config = Config.Config.allConfigs[config]
+      env.MakeBundle('Hello' + config.suffix + '.plugin', 'Hello' + config.suffix,
+                    'Info.plist',
+                    typecode='BRPL', creator='????',
+                    resources="English.lproj")
+
+Return('ret')
 

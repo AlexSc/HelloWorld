@@ -1,0 +1,4 @@
+Import('env')
+Import('libs')
+ret = env.Build('Program', 'hello', 'main.cpp', LIBS_CFG=libs[1], LIBPATH='../lib', CPPPATH='../lib')
+Return('ret')

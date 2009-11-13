@@ -1,3 +1,0 @@
-SConscript(['../scons/Universal', '../lib/SConstruct'])
-env = Environment(CPPPATH='../lib')
-env.DoUniversal('Program', 'hello', 'main.cpp', LIBS=['hello'], LIBPATH='../lib')

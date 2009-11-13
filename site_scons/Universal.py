@@ -1,3 +1,5 @@
+from SCons.Script import *
+
 def DoUniversal(env, command, target, source, *args, **kw):
    envs = []
    if env['PLATFORM'] == 'darwin':
@@ -16,4 +18,5 @@ def DoUniversal(env, command, target, source, *args, **kw):
       env['BUILDERS'][command](env, target, source, *args, **kw)
 
    return None;
+   
 AddMethod(Environment, DoUniversal)
