@@ -99,7 +99,7 @@ import Config
 Import('env')
 Import('libs')
 
-env.Append(CPPPATH=['../inc', '../../lib'], LIBPATH='../../lib')
+env.Append(CPPPATH=['../inc', '#/lib'], LIBPATH='#/lib')
 isLinux = env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'linux'
 isOSX = env['PLATFORM'] == 'darwin'
 cppdefines = []
@@ -109,7 +109,8 @@ if isOSX:
    cppdefines += ["XP_MACOSX"]
    
 env.Append(CPPDEFINES=cppdefines)
-ret = env.Build('LoadableModule', 'Hello', 'plugin.cpp', LIBS_CFG=libs[1])
+files = Glob('*.cpp')
+ret = env.Build('LoadableModule', 'Hello', files, LIBS_CFG=libs[1])
 
 TOOL_BUNDLE(env)
 if isOSX:

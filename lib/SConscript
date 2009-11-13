@@ -5,6 +5,6 @@ import DefaultConfig
 
 Import('env')
 
-files = ['hello.cpp']
+files = Glob('*.cpp')
 ret = env.Build('StaticLibrary', 'hello', files)
 Return('ret')
