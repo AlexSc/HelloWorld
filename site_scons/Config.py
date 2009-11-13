@@ -1,4 +1,5 @@
 from SCons.Script import *
+import Universal
 from os import path
 
 class Config:
@@ -50,18 +51,22 @@ def Build(environ, command, target, source, *args, **kw):
          if not dir:
             dir = '.'
          if not dir in dirs:
-         	dirs.append(dir)
+            dirs.append(dir)
 
       for dir in dirs:
          newEnv.VariantDir(outdir, dir, duplicate=0)
-      newTarget = newEnv['BUILDERS'][command].get_prefix(newEnv) + target + config.suffix + newEnv['BUILDERS'][command].get_suffix(newEnv)
-      newEnv.DoUniversal(command, outdir + newTarget, newFiles, *args, **cleanDict)
-      fullPath[config.name] = newEnv.Command(newTarget, outdir + newTarget, Copy('$TARGET', '$SOURCE'))
+      builder = newEnv['BUILDERS'][command]
+      newTarget = builder.get_prefix(newEnv) + target + config.suffix + builder.get_suffix(newEnv)
+      newEnv.DoUniversal(command, outdir + newTarget, newFiles, *args, 
+                         **cleanDict)
+      fullPath[config.name] = newEnv.Command(newTarget, outdir + newTarget,
+                                             Copy('$TARGET', '$SOURCE'))
       cleanName[config.name] = target +config.suffix
 
    return fullPath, cleanName
 
 def GetVars(vars):
-	vars.Add(ListVariable('cfg', 'Build configurations', Config.default, Config.allConfigs.keys()))
+   vars.Add(ListVariable('cfg', 'Build configurations', Config.default,
+                         Config.allConfigs.keys()))
 
 AddMethod(Environment, Build)
