@@ -1,7 +1,9 @@
 from SCons.Script import *
+from os import path
 
 def DoUniversal(env, command, target, source, *args, **kw):
    envs = []
+   builder = env['BUILDERS'][command]
    if env['PLATFORM'] == 'darwin':
       envs = [env.Clone(), env.Clone(), env.Clone()]
 
@@ -15,12 +17,14 @@ def DoUniversal(env, command, target, source, *args, **kw):
       outs = []
 
       for environ in envs:
-         outs += environ['BUILDERS'][command](environ, target=None, 
-                                              source=source, *args, **kw)
-      env.Command(target, outs, "lipo -create $SOURCES -output $TARGET" )
+         outs += builder(environ, target=None, 
+                         source=source, *args, **kw)
+      p, f = path.split(target)
+      target = path.join(p, builder.get_prefix(env) + f + builder.get_suffix(env))
+      ret = env.Command(target, outs, "lipo -create $SOURCES -output $TARGET" )
    else:
-      env['BUILDERS'][command](env, target, source, *args, **kw)
+      ret = builder(env, target, source, *args, **kw)
 
-   return None;
+   return ret;
 
 AddMethod(Environment, DoUniversal)

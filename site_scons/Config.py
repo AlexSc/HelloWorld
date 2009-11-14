@@ -55,13 +55,18 @@ def Build(environ, command, target, source, *args, **kw):
 
       for dir in dirs:
          newEnv.VariantDir(outdir, dir, duplicate=0)
-      builder = newEnv['BUILDERS'][command]
-      newTarget = builder.get_prefix(newEnv) + target + config.suffix + builder.get_suffix(newEnv)
-      newEnv.DoUniversal(command, outdir + newTarget, newFiles, *args, 
-                         **cleanDict)
-      fullPath[config.name] = newEnv.Command(newTarget, outdir + newTarget,
+
+      newTarget = target + config.suffix
+      p = newEnv.DoUniversal(command, outdir + newTarget, newFiles, *args, 
+                             **cleanDict)
+
+      # Copy the final product into our current working directory and save
+      # that path for dependency tracking.
+      fullPath[config.name] = newEnv.Command(path.split(str(p[0]))[1], p,
                                              Copy('$TARGET', '$SOURCE'))
-      cleanName[config.name] = target +config.suffix
+
+      # Save the unadorned name of the product to pass into other build comamnds
+      cleanName[config.name] = newTarget
 
    return fullPath, cleanName
 
