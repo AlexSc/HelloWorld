@@ -10,7 +10,7 @@ isOSX = env['PLATFORM'] == 'darwin'
 isWindows = env['PLATFORM'] == 'win32'
 cppdefines = []
 if isLinux or isOSX:
-   cppdefines += ["XP_UNIX", 'MDCPUCFG="prcpucfg_unix.h"']
+   cppdefines += ["XP_UNIX", 'MDCPUCFG="\\"prcpucfg_unix.h"\\"']
 if isOSX:
    cppdefines += ["XP_MACOSX"]
 if isWindows:
