@@ -118,7 +118,7 @@ void pluginInvalidate ()
 #ifdef XP_UNIX
 NPError NP_Initialize(NPNetscapeFuncs *pFuncs, NPPluginFuncs* outFuncs)
 #else
-NPError NP_Initialize(NPNetscapeFuncs *pFuncs)
+NPError OSCALL NP_Initialize(NPNetscapeFuncs *pFuncs)
 #endif
 {
 	fprintf(stderr, "[HelloWorld] - NP_Initialize\n");
@@ -147,7 +147,7 @@ NPError NP_Initialize(NPNetscapeFuncs *pFuncs)
 
    NPNFuncs = *pFuncs;
 
-#ifndef XP_MACOSX
+#if defined(XP_UNIX) && !defined(XP_MACOSX)
    NP_GetEntryPoints(outFuncs);
 #endif
    
@@ -161,7 +161,7 @@ char* NP_GetMIMEDescription()
 	return "application/x-hello-world::Hello World Plugin";
 }
 
-NPError NP_GetEntryPoints(NPPluginFuncs* pFuncs)
+NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
 {
    if (pFuncs == NULL) {
       fprintf(stderr, "[HelloWorld] - NP_GetEntryPoints no table\n");
@@ -197,7 +197,7 @@ NPError NP_GetEntryPoints(NPPluginFuncs* pFuncs)
    return NPERR_NO_ERROR;
 }
 
-NPError NP_GetValue(void*, NPPVariable variable, void* value)
+NPError OSCALL NP_GetValue(void*, NPPVariable variable, void* value)
 {
    if (variable == NPPVpluginNameString)
    {
@@ -217,8 +217,8 @@ NPError NP_GetValue(void*, NPPVariable variable, void* value)
 }
 
 // Called to create a new instance of the plugin
-NPError NPP_New(NPMIMEType pluginType, NPP instance, uint16_t mode, 
-	int16_t argc, char* argn[], char* argv[], NPSavedData* saved)
+NPError NPP_New(NPMIMEType pluginType, NPP instance, uint16 mode, 
+	int16 argc, char* argn[], char* argv[], NPSavedData* saved)
 {
   return NPERR_NO_ERROR;
 }
@@ -237,7 +237,7 @@ NPError NPP_SetWindow(NPP instance, NPWindow* window)
 
 
 NPError NPP_NewStream(NPP instance, NPMIMEType type, NPStream* stream, 
-	NPBool seekable, uint16_t* stype)
+	NPBool seekable, uint16* stype)
 {
   *stype = NP_ASFILEONLY;
   return NPERR_NO_ERROR;
@@ -248,13 +248,13 @@ NPError NPP_DestroyStream(NPP instance, NPStream* stream, NPReason reason)
   return NPERR_NO_ERROR;
 }
 
-int32_t NPP_WriteReady(NPP instance, NPStream* stream)
+int32 NPP_WriteReady(NPP instance, NPStream* stream)
 {
   return 0;
 }
 
-int32_t NPP_Write(NPP instance, NPStream* stream, int32_t offset, 
-	int32_t len, void* buffer)
+int32 NPP_Write(NPP instance, NPStream* stream, int32 offset, 
+	int32 len, void* buffer)
 {
   return 0;
 }
@@ -268,7 +268,7 @@ void NPP_Print(NPP instance, NPPrint* platformPrint)
   
 }
 
-int16_t NPP_HandleEvent(NPP instance, void* event)
+int16 NPP_HandleEvent(NPP instance, void* event)
 {
   return 0;
 }
@@ -312,7 +312,7 @@ NPError NPP_SetValue(NPP instance, NPNVariable variable, void *value)
   return NPERR_GENERIC_ERROR;
 }
 
-NPError NP_Shutdown()
+NPError OSCALL NP_Shutdown()
 {
 	return NPERR_NO_ERROR;
 }
