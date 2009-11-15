@@ -1,4 +1,4 @@
-LIBRARY   NPBASIC
+LIBRARY   NPHELLO
 
 EXPORTS
 	NP_GetEntryPoints   @1

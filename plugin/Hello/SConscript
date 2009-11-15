@@ -19,6 +19,7 @@ if isOSX:
 if isWindows:
    cppdefines += ["WIN32", "_WINDOWS", 'MDCPUCFG="\\"prcpucfg_win32.h"\\"']
    files += env.RES(Glob('*.rc'))
+   files += Glob('*.def')
    target = 'nphello'
 
 env.Append(CPPDEFINES=cppdefines)
