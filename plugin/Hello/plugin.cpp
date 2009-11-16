@@ -29,13 +29,13 @@ NPError NP_Initialize(NPNetscapeFuncs *pFuncs, NPPluginFuncs* outFuncs)
 NPError OSCALL NP_Initialize(NPNetscapeFuncs *pFuncs)
 #endif
 {
-	// You never know.
+   // You never know.
    if (pFuncs == NULL)
    {
       return NPERR_INVALID_FUNCTABLE_ERROR;
    }
 
-	// Major versions are assumed to completely break compatibility.  If this is
+   // Major versions are assumed to completely break compatibility.  If this is
    // a different major version, don't even try.
    if ((pFuncs->version >> 8) != NP_VERSION_MAJOR)
    {
@@ -46,18 +46,18 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs *pFuncs)
    // compiled against, assume we are incompatible.
    if (((int)(char)pFuncs->version) < NP_VERSION_MINOR)
    {
-   	return NPERR_INCOMPATIBLE_VERSION_ERROR;
+      return NPERR_INCOMPATIBLE_VERSION_ERROR;
    }
 
    NPNFuncs = *pFuncs;
 
 #if defined(XP_UNIX) && !defined(XP_MACOSX)
-	// On Unix type systems (except for OS X) NP_GetEntryPoints won't be called
+   // On Unix type systems (except for OS X) NP_GetEntryPoints won't be called
    // so call it ourselves.
    NP_GetEntryPoints(outFuncs);
 #endif
 
-	// You can haz plugin.
+   // You can haz plugin.
    return NPERR_NO_ERROR;
 }
 
@@ -68,7 +68,7 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs *pFuncs)
 // file in the plugin bundle.  This function is optional on OS X.
 char* NP_GetMIMEDescription()
 {
-	return "application/x-hello-world::Hello World Plugin";
+   return "application/x-hello-world::Hello World Plugin";
 }
 
 // This function is called by the browser on Windows and on OS X.
@@ -88,7 +88,7 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
    
    // If our version was incompatible with the plugin version, we shouldn't get
    // here, so don't check version info again.
-   
+
    pFuncs->version       = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
    pFuncs->newp          = NPP_New;
    pFuncs->destroy       = NPP_Destroy;
@@ -118,23 +118,23 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
 // this function directly.
 NPError OSCALL NP_GetValue(void*, NPPVariable variable, void* value)
 {
-	// Return the human readable name of our plugin.
+   // Return the human readable name of our plugin.
    if (variable == NPPVpluginNameString)
    {
-		const char** val = (const char**)value;
+      const char** val = (const char**)value;
       *val = "Hello World Plugin";
       return NPERR_NO_ERROR;
    }
 
-	// Return a human readable description of what the plugin does.
+   // Return a human readable description of what the plugin does.
    if (variable == NPPVpluginDescriptionString)
    {
-		const char** val = (const char**)value;
+      const char** val = (const char**)value;
       // In your own plugin, make this a bit more descriptive :p
       *val = "Hello World Plugin";
       return NPERR_NO_ERROR;
    }
-   
+
    // We don't recognize any other parameters.  If you're not using NP_GetValue
    // as NP*P*_GetValue, then it shouldn't be called with any other parameters
    // anyways.
@@ -148,46 +148,46 @@ NPError OSCALL NP_GetValue(void*, NPPVariable variable, void* value)
 // More information on how to implement these functions is outside the scope
 // of this example.
 // Called to create a new instance of the plugin
-NPError NPP_New(NPMIMEType pluginType, NPP instance, uint16 mode, 
-	int16 argc, char* argn[], char* argv[], NPSavedData* saved)
+NPError NPP_New(NPMIMEType pluginType, NPP instance, uint16 mode,
+   int16 argc, char* argn[], char* argv[], NPSavedData* saved)
 {
-  return NPERR_NO_ERROR;
+   return NPERR_NO_ERROR;
 }
 
 // Called to destroy an instance of the plugin
 NPError NPP_Destroy(NPP instance, NPSavedData** save)
 {
-  return NPERR_NO_ERROR;
+   return NPERR_NO_ERROR;
 }
 
 // Called to update a plugin instances's NPWindow
 NPError NPP_SetWindow(NPP instance, NPWindow* window)
 {
-  return NPERR_NO_ERROR;
+   return NPERR_NO_ERROR;
 }
 
 
-NPError NPP_NewStream(NPP instance, NPMIMEType type, NPStream* stream, 
-	NPBool seekable, uint16* stype)
+NPError NPP_NewStream(NPP instance, NPMIMEType type, NPStream* stream,
+   NPBool seekable, uint16* stype)
 {
-  *stype = NP_ASFILEONLY;
-  return NPERR_NO_ERROR;
+   *stype = NP_ASFILEONLY;
+   return NPERR_NO_ERROR;
 }
 
 NPError NPP_DestroyStream(NPP instance, NPStream* stream, NPReason reason)
 {
-  return NPERR_NO_ERROR;
+   return NPERR_NO_ERROR;
 }
 
 int32 NPP_WriteReady(NPP instance, NPStream* stream)
 {
-  return 0;
+   return 0;
 }
 
 int32 NPP_Write(NPP instance, NPStream* stream, int32 offset, 
-	int32 len, void* buffer)
+   int32 len, void* buffer)
 {
-  return 0;
+   return 0;
 }
 
 void NPP_StreamAsFile(NPP instance, NPStream* stream, const char* fname)
@@ -196,16 +196,16 @@ void NPP_StreamAsFile(NPP instance, NPStream* stream, const char* fname)
 
 void NPP_Print(NPP instance, NPPrint* platformPrint)
 {
-  
+
 }
 
 int16 NPP_HandleEvent(NPP instance, void* event)
 {
-  return 0;
+   return 0;
 }
 
-void NPP_URLNotify(NPP instance, const char* url, NPReason reason, 
-	void* notifyData)
+void NPP_URLNotify(NPP instance, const char* url, NPReason reason,
+   void* notifyData)
 {
 
 }
@@ -218,14 +218,17 @@ void pluginInvalidate ();
 bool pluginHasProperty (NPClass *theClass, NPIdentifier name);
 bool pluginHasMethod (NPObject *npobj, NPIdentifier name);
 bool pluginGetProperty (NPObject *obj, NPIdentifier name, NPVariant *variant);
-bool pluginSetProperty (NPObject *obj, NPIdentifier name, const NPVariant *variant);
-bool pluginInvoke (NPObject *obj, NPIdentifier name, NPVariant *args, uint32_t argCount, NPVariant *result);
-bool pluginInvokeDefault (NPObject *obj, NPVariant *args, uint32_t argCount, NPVariant *result);
+bool pluginSetProperty (NPObject *obj, NPIdentifier name,
+                        const NPVariant *variant);
+bool pluginInvoke (NPObject *obj, NPIdentifier name, NPVariant *args,
+                   uint32_t argCount, NPVariant *result);
+bool pluginInvokeDefault (NPObject *obj, NPVariant *args, uint32_t argCount,
+                          NPVariant *result);
 
-static NPClass _pluginFunctionPtrs = { 
+static NPClass _pluginFunctionPtrs = {
    NP_CLASS_STRUCT_VERSION,
-   (NPAllocateFunctionPtr)       NULL, 
-   (NPDeallocateFunctionPtr)     NULL, 
+   (NPAllocateFunctionPtr)       NULL,
+   (NPDeallocateFunctionPtr)     NULL,
    (NPInvalidateFunctionPtr)     pluginInvalidate,
    (NPHasMethodFunctionPtr)      pluginHasMethod,
    (NPInvokeFunctionPtr)         pluginInvoke,
@@ -237,20 +240,21 @@ static NPClass _pluginFunctionPtrs = {
 
 NPError NPP_GetValue(NPP instance, NPPVariable variable, void *value)
 {
-	if (variable == NPPVpluginScriptableNPObject)
+   if (variable == NPPVpluginScriptableNPObject)
    {
-   	static bool identifiersInitialized = false;
+      static bool identifiersInitialized = false;
       if (!identifiersInitialized)
       {
          identifiersInitialized = true;
          initializeIdentifiers();
       }
-      
-   	if (instance->pdata == NULL)
+
+      if (instance->pdata == NULL)
       {
-      	instance->pdata = NPNFuncs.createobject(instance, &_pluginFunctionPtrs);
+         instance->pdata = NPNFuncs.createobject(instance,
+                                                 &_pluginFunctionPtrs);
       }
-      
+
       NPObject* obj = reinterpret_cast<NPObject*> (instance->pdata);
       NPNFuncs.retainobject(obj);
       void **v = (void**)value;
@@ -258,12 +262,12 @@ NPError NPP_GetValue(NPP instance, NPPVariable variable, void *value)
       return NPERR_NO_ERROR;
    }
 
-  return NPERR_GENERIC_ERROR;
+   return NPERR_GENERIC_ERROR;
 }
 
 NPError NPP_SetValue(NPP instance, NPNVariable variable, void *value)
 {
-  return NPERR_GENERIC_ERROR;
+   return NPERR_GENERIC_ERROR;
 }
 
 #define ID_HELLO 0
@@ -284,26 +288,27 @@ static void initializeIdentifiers()
       pluginMethodIdentifiers);
 };
 
-bool pluginHasProperty (NPClass *theClass, NPIdentifier name)
-{   
+bool pluginHasProperty(NPClass *theClass, NPIdentifier name)
+{
    return false;
 }
 
 bool pluginHasMethod(NPObject *npobj, NPIdentifier name)
 {
-	if (name == pluginMethodIdentifiers[ID_HELLO])
-   	return true;
+   if (name == pluginMethodIdentifiers[ID_HELLO])
+      return true;
    return false;
 }
 
-bool pluginGetProperty (NPObject *obj, NPIdentifier name, NPVariant *variant)
+bool pluginGetProperty(NPObject *obj, NPIdentifier name, NPVariant *variant)
 {
    VOID_TO_NPVARIANT(*variant);
 
    return false;
 }
 
-bool pluginSetProperty (NPObject *obj, NPIdentifier name, const NPVariant *variant)
+bool pluginSetProperty(NPObject *obj, NPIdentifier name,
+                        const NPVariant *variant)
 {
    return false;
 }
@@ -312,19 +317,22 @@ void FillString(const std::string& src, NPVariant* variant)
 {
    variant->type = NPVariantType_String;
    variant->value.stringValue.utf8length = static_cast<uint32_t>(src.length());
-   variant->value.stringValue.utf8characters = reinterpret_cast<NPUTF8 *>(NPNFuncs.memalloc(src.size()));
-   memcpy((void*)variant->value.stringValue.utf8characters, src.c_str(), src.size());   
+   variant->value.stringValue.utf8characters = reinterpret_cast<NPUTF8 *>
+                                               (NPNFuncs.memalloc(src.size()));
+   memcpy((void*)variant->value.stringValue.utf8characters, src.c_str(),
+          src.size());
 }
 
 // handle our plugin methods using standard np plugin conventions.
-bool pluginInvoke (NPObject *obj, NPIdentifier name, NPVariant *args, unsigned argCount, NPVariant *result)
+bool pluginInvoke(NPObject *obj, NPIdentifier name, NPVariant *args,
+                   unsigned argCount, NPVariant *result)
 {
    VOID_TO_NPVARIANT(*result);
-   
+
    if (name == pluginMethodIdentifiers[ID_HELLO])
    {
-   	hello Hello;
-   	std::string value = Hello.i_say();
+      hello Hello;
+      std::string value = Hello.i_say();
       FillString(value, result);
       return true;
    }
@@ -332,13 +340,14 @@ bool pluginInvoke (NPObject *obj, NPIdentifier name, NPVariant *args, unsigned a
    return false;
 }
 
-bool pluginInvokeDefault (NPObject *obj, NPVariant *args, unsigned argCount, NPVariant *result)
+bool pluginInvokeDefault(NPObject *obj, NPVariant *args, unsigned argCount,
+                          NPVariant *result)
 {
    VOID_TO_NPVARIANT(*result);
    return false;
 }
 
-void pluginInvalidate ()
+void pluginInvalidate()
 {
    // Make sure we've released any remaining references to JavaScript
    // objects.
@@ -352,5 +361,5 @@ void pluginInvalidate ()
 // with the same signature.
 NPError OSCALL NP_Shutdown()
 {
-	return NPERR_NO_ERROR;
+   return NPERR_NO_ERROR;
 }
