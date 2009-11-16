@@ -4,6 +4,9 @@
 *.os
 *.so
 *.pyc
+*.dll
+*.lib
+*.res
 cli/hello*
 lib/*.a
 *.pbxuser
