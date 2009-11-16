@@ -4,11 +4,6 @@ The HelloWorld example has been tested with Python 2.5/SCons 1.2.0, and Python 2
 
 If you are using Visual Studio 2008 or later, you must use SCons 1.2.0.d20090919 or later.
 
-SCons 1.2.0.d20090919 contains a set of bugs pertaining to Windows Resource Scripts.
-1) Resource scripts must be explicitly compiled, otherwise SCons will attempt to link the raw resource script.
-e.g. files += Glob('.rc') will not work, but files += env.RES(Glob('.rc')) will.
-2) Resource script file names must start with an 'a' or 'b'.  Names which begin with any other letter result in SCons not compiling the resource script.
-
 HelloWorld contains a set of custom SCons functionality designed to suit the needs of real world projects and OS X projects.
 
 1) The Config class and cfg variable can be used to easily add new build configurations and control which configurations are built.  HelloWorld uses this in order to build separate Debug, Optimized Debug, and Release products.
@@ -19,6 +14,8 @@ LIBS_CFG={'dbg': debugLib, 'release':releaseLib} will set LIBS to debugLib if th
 3) The DoUniversal method handles compiling OS X binaries for ppc, i386, and x86_64 architectures and linking them into a universal binary.  Build uses DoUniversal behind the scenes.
 
 4) The MakeBundle method will take an input binary, bundle name, path to an  Info.plist file, optional typecode and creator flags, and a list of paths to copy into the <bundle>/Resouces directory and create an OS X package based on that.  It will also fill in ${EXECUTABLE_NAME} and ${PRODUCT_NAME} variables in the Info.plist with the name of the binary
+
+5) .rc files as inputs to Program, StaticLibrary, SharedLibrary, or LoadableModule are properly handled.
 
 Known issues with custom functionality:
 Build will only substitute variables which have been passed directly to it.  It will not check for _CFG variables on the given Environment object.
