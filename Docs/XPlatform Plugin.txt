@@ -1,0 +1,38 @@
+Multiplatform NPAPI SDK
+
+The HelloWorld example project contains a minimal multiplatform NPAPI SDK.  In order to build properly with it, the following defines must be set:
+
+Linux/Unix/OSX systems: XP_UNIX, MDCPUCFG="prcpucfg_unix.h"
+OSX systems: XP_MACOSX
+Windows systems: WIN32, _WINDOWS, MDCPUCFG="prcpucfg_win32.h"
+
+Plugin structure:
+Windows: DLL
+Linux: SO
+OS X: Bundle
+
+Plugin name:
+Windows: Name must begin with np and end in .dll.  No other names will be recognized.
+Linux: Name must begin with lib and end in .so.
+OS X: Name must end in .plugin
+
+Plugin Metadata:
+Windows: The plugin must be compiled with a resource file which sets the FileDescription, FileOpenName, InternalName, MIMEType, OriginalFilename, and ProductName file info strings.  FileDescription, FileOpenName, and OriginalFilename must all be the name of the fire, with the first two dropping the .dll extension.  The MIMEType string is used to fill in the mime types supported by the plugin.  The ProductName string is used to fill in the description of the plugin.
+
+Linux: None.  All information is extracted via NP calls.  NP_GetValue will be called with NPPVpluginNameString to get the plugin name, and with NPPVpluginDescriptionString to get the plugin description.  NP_GetMIMEDescription() will be called to get the list of mime types the plugin supports.
+
+OS X: Metadata is stored in an Info.plist file in the plugin bundle.  WebPluginName sets the name of the plugin, WebPluginDescription sets the description of the plugin.  WebPluingMIMETypes is a dictionary whose keys are mime types (e.g. application/x-hello-world" and whose values are another dictionary with the key "WebPluginTypeDescription" and the value of that key is the description for the mime type.  The CFBundlePackageType must be BRPL.
+
+Plugin Initialization:
+Windows:
+NP_Initialize(NPNetscapeFuncs *pFuncs);
+NP_GetEntryPoints(NPPluginFuncs *pFuncs);
+
+Linux:
+NP_Initialize(NPNetscapeFuncs *pInFuncs, NPPluginFuncs *pOutFuncs);
+
+OS X:
+NP_Initialize(NPNetscapeFuncs *pInFuncs, NPPluginFuncs *pOutFuncs); - BUT DO NOT USE pOutFuncs!  This signature is required due to a bug in the SDK
+NP_GetEntryPoints(NPPluginFuncs *pFuncs)
+
+Thus far, all other aspects of plugin development are crossplatform.
