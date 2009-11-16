@@ -1,4 +1,5 @@
 from SCons.Script import *
+from SCons.Tool import *
 import Universal
 from os import path
 
@@ -19,6 +20,19 @@ class Config:
       return newEnv
 
 def Build(environ, command, target, source, *args, **kw):
+   if environ['PLATFORM'] == 'win32':
+      ld = SCons.Tool.createLoadableModuleBuilder(environ)
+      ld.add_src_builder('RES')
+
+      sl = SCons.Tool.createSharedLibBuilder(environ)
+      sl.add_src_builder('RES')
+
+      sl = SCons.Tool.createStaticLibBuilder(environ)
+      sl.add_src_builder('RES')
+
+      p = SCons.Tool.createProgBuilder(environ)
+      p.add_src_builder('RES')
+
    configs = environ.subst('${cfg}').split()
    fullPath = {}
    cleanName = {}
