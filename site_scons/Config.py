@@ -48,7 +48,7 @@ def Build(environ, command, target, source, copy=True, *args, **kw):
       # Do config substitution on incoming construction variables
       for key in kw.keys():
          if key.endswith('_CFG'):
-           cleanDict[key[:-4]] = kw[key][config.name]
+            cleanDict[key[:-4]] = kw[key][config.name]
          else:
             cleanDict[key] = kw[key]
 
@@ -59,13 +59,20 @@ def Build(environ, command, target, source, copy=True, *args, **kw):
 
       # Tell SCons to build the files in a build/<cfg> directory
       dirs = []
+      newSource = []
       for file in source:
+         if SCons.Util.is_Dict(file):
+            newSource.append(file[config.name])
+         else:
+            newSource.append(file)
          dir, file = path.split(str(file))
          newFiles.append(outdir + file)
          if not dir:
             dir = '.'
          if not dir in dirs:
             dirs.append(dir)
+
+      source = newSource
 
       for dir in dirs:
          newEnv.VariantDir(outdir, dir, duplicate=0)
