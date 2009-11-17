@@ -20,7 +20,8 @@ if isOSX:
    cppdefines += ["XP_MACOSX"]
 if isWindows:
    cppdefines += ["WIN32", "_WINDOWS", 'MDCPUCFG="\\"prcpucfg_win32.h"\\"']
-   files += env.Build('SubstInFile', 'hello.def', 'hello.def.in', copy=False, SUBST_DICT_CFG={'dbg':{'LIBNAME':'NPHELLO_DEBUG'}, 'optdbg': {'LIBNAME':'NPHELLO_OPTIMIZED'}, 'release':{'LIBNAME':'NPHELLO'}})[0]
+   f = env.Build('SubstInFile', 'hello.def', 'hello.def.in', copy=False, suffix=False, SUBST_DICT_CFG={'dbg':{'LIBNAME':'NPHELLO_DEBUG'}, 'optdbg': {'LIBNAME':'NPHELLO_OPTIMIZED'}, 'release':{'LIBNAME':'NPHELLO'}})[0]
+   files.append(f)
    files += Glob('*.rc')
    target = 'nphello'
    
