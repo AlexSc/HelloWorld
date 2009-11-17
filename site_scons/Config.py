@@ -61,7 +61,11 @@ def Build(environ, command, target, source, copy=True, suffix=True, *args, **kw)
       dirs = []
       for file in source:
          if SCons.Util.is_Dict(file):
-            file = file[config.name]
+            if config.name in file:
+               file = file[config.name]
+            else:
+               # If the file isn't specified for this config, skip it.
+               continue
          dir, file = path.split(str(file))
          newFiles.append(outdir + file)
          if not dir:
