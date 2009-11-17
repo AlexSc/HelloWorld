@@ -19,7 +19,7 @@ class Config:
       newEnv.Prepend(**self.opts)
       return newEnv
 
-def Build(environ, command, target, source, *args, **kw):
+def Build(environ, command, target, source, copy=True, *args, **kw):
    if environ['PLATFORM'] == 'win32':
       ld = SCons.Tool.createLoadableModuleBuilder(environ)
       ld.add_src_builder('RES')
@@ -76,8 +76,11 @@ def Build(environ, command, target, source, *args, **kw):
 
       # Copy the final product into our current working directory and save
       # that path for dependency tracking.
-      fullPath[config.name] = newEnv.Command(path.split(str(p[0]))[1], p,
-                                             Copy('$TARGET', '$SOURCE'))
+      if copy:
+         fullPath[config.name] = newEnv.Command(path.split(str(p[0]))[1], p,
+                                                Copy('$TARGET', '$SOURCE'))
+      else:
+         fullPath[config.name] = p
 
       # Save the unadorned name of the product to pass into other build comamnds
       cleanName[config.name] = newTarget

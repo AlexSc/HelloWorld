@@ -4,7 +4,8 @@ from os import path
 def DoUniversal(env, command, target, source, *args, **kw):
    envs = []
    builder = env['BUILDERS'][command]
-   if env['PLATFORM'] == 'darwin':
+   exe = (command == 'LoadableModule' or command == 'SharedLibrary' or command == 'StaticLibrary' or command == 'Program' or command == 'Library')
+   if env['PLATFORM'] == 'darwin' and exe:
       envs = [env.Clone(), env.Clone(), env.Clone()]
 
       envs[0].Append(CCFLAGS="-arch ppc", LINKFLAGS="-arch ppc",

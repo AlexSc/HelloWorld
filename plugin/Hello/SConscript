@@ -6,6 +6,8 @@ Import('libs')
 
 files = Glob('*.cpp')
 
+TOOL_SUBST(env)
+
 env.Append(CPPPATH=['../inc', '#/lib'], LIBPATH='#/lib')
 isLinux = env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'linux'
 isOSX = env['PLATFORM'] == 'darwin'
@@ -18,15 +20,17 @@ if isOSX:
    cppdefines += ["XP_MACOSX"]
 if isWindows:
    cppdefines += ["WIN32", "_WINDOWS", 'MDCPUCFG="\\"prcpucfg_win32.h"\\"']
+   files += env.Build('SubstInFile', 'hello.def', 'hello.def.in', copy=False, SUBST_DICT_CFG={'dbg':{'LIBNAME':'NPHELLO_DEBUG'}, 'optdbg': {'LIBNAME':'NPHELLO_OPTIMIZED'}, 'release':{'LIBNAME':'NPHELLO'}})[0]
    files += Glob('*.rc')
-   files += Glob('*.def')
    target = 'nphello'
+   
+
 
 env.Append(CPPDEFINES=cppdefines)
 ret = env.Build('LoadableModule', target, files, LIBS_CFG=libs[1])
 
 TOOL_BUNDLE(env)
-if isOSX:
+if isOSX and False:
    configs = env.subst('${cfg}').split()
    for config in configs:
       config = Config.allConfigs[config]
@@ -36,4 +40,3 @@ if isOSX:
                      resources="English.lproj")
 
 Return('ret')
-
