@@ -8,6 +8,19 @@ files = Glob('*.cpp')
 
 TOOL_SUBST(env)
 
+hellorc_subst = {}
+hellorc_subst['dbg'] = {'FILE_DESC':'nphello_debug', 'FILE_OPEN_NAME':'nphello_debug'}
+hellorc_subst['dbg'].update({'INTERNAL_NAME':'Hello Debug', 'MIME_TYPE':'application/x-hello-world-debug'})
+hellorc_subst['dbg'].update({'ORIGINAL_FILE_NAME':'nphello_debug.dll', 'PRODUCT_NAME':'HelloWorld Plugin Debug'})
+
+hellorc_subst['optdbg'] = {'FILE_DESC':'nphello_optimized', 'FILE_OPEN_NAME':'nphello_optimized'}
+hellorc_subst['optdbg'].update({'INTERNAL_NAME':'Hello OptDebug', 'MIME_TYPE':'application/x-hello-world'})
+hellorc_subst['optdbg'].update({'ORIGINAL_FILE_NAME':'nphello_optimized.dll', 'PRODUCT_NAME':'HelloWorld Plugin OptDebug'})
+
+hellorc_subst['release'] = {'FILE_DESC':'nphello', 'FILE_OPEN_NAME':'nphello'}
+hellorc_subst['release'].update({'INTERNAL_NAME':'Hello', 'MIME_TYPE':'application/x-hello-world'})
+hellorc_subst['release'].update({'ORIGINAL_FILE_NAME':'nphello.dll', 'PRODUCT_NAME':'HelloWorld Plugin'})
+
 env.Append(CPPPATH=['../inc', '#/lib'], LIBPATH='#/lib')
 isLinux = env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'linux'
 isOSX = env['PLATFORM'] == 'darwin'
@@ -21,6 +34,8 @@ if isOSX:
 if isWindows:
    cppdefines += ["WIN32", "_WINDOWS", 'MDCPUCFG="\\"prcpucfg_win32.h"\\"']
    f = env.Build('SubstInFile', 'hello.def', 'hello.def.in', copy=False, suffix=False, SUBST_DICT_CFG={'dbg':{'LIBNAME':'NPHELLO_DEBUG'}, 'optdbg': {'LIBNAME':'NPHELLO_OPTIMIZED'}, 'release':{'LIBNAME':'NPHELLO'}})[0]
+   files.append(f)
+   f = env.Build('SubstInFile', 'hello.rc', 'hello.rc.in', copy=False, suffix=False, SUBST_DICT_CFG=hellorc_subst)[0]
    files.append(f)
    files += Glob('*.rc')
    target = 'nphello'
