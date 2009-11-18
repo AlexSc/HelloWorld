@@ -21,7 +21,7 @@ hellorc_subst['release'] = {'FILE_DESC':'nphello', 'FILE_OPEN_NAME':'nphello'}
 hellorc_subst['release'].update({'INTERNAL_NAME':'Hello', 'MIME_TYPE':'application/x-hello-world'})
 hellorc_subst['release'].update({'ORIGINAL_FILE_NAME':'nphello.dll', 'PRODUCT_NAME':'HelloWorld Plugin'})
 
-env.Append(CPPPATH=['../inc', '#/lib'], LIBPATH='#/lib')
+env.Append(CPPPATH=['../inc', '#/lib', '.'], LIBPATH='#/lib')
 isLinux = env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'linux'
 isOSX = env['PLATFORM'] == 'darwin'
 isWindows = env['PLATFORM'] == 'win32'
