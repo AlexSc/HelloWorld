@@ -47,7 +47,7 @@ BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", " \0"
             VALUE "FileDescription", "${FILE_DESC}\0"
-            VALUE "FileExtents", "bic\0"
+            VALUE "FileExtents", "\0"
             VALUE "FileOpenName", "${FILE_OPEN_NAME}\0"
             VALUE "FileVersion", "1, 0, 0, 1\0"
             VALUE "InternalName", "${INTERNAL_NAME}\0"
