@@ -93,6 +93,11 @@ def Build(environ, command, target, source, copy=True, suffix=True, *args, **kw)
 
       # Save the unadorned name of the product to pass into other build comamnds
       cleanName[config.name] = newTarget
+      
+      if 'CUSTOM_DEPS' in newEnv:
+		deps = newEnv['CUSTOM_DEPS']
+		if command in deps:
+			deps[command](newEnv, fullPath[config.name], *args, **cleanDict)
 
    return fullPath, cleanName
 

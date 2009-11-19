@@ -1,6 +1,11 @@
 from SCons.Script import *
 from SCons.Script.SConscript import SConsEnvironment
+from SCons.Node import *
 from string import Template
+
+class SubstDeps:
+   def __call__(self, env, target, **kw):
+      env.Depends(target, SCons.Node.Python.Value(str(kw['SUBST_DICT'])))
 
 def subst_file(target, source, env):
    # Read file
@@ -38,6 +43,9 @@ def subst_string(target, source, env):
 def TOOL_SUBST(env):
    subst_in_file_action = SCons.Action.Action(subst_in_file, subst_string)
    env['BUILDERS']['SubstInFile'] = Builder(action=subst_in_file_action)
+   if not 'CUSTOM_DEPS' in env:
+      env['CUSTOM_DEPS'] = {}
+   env['CUSTOM_DEPS']['SubstInFile'] = SubstDeps()
 
 def TOOL_BUNDLE(env):
    """defines env.MakeBundle() for installing a bundle into its dir.
