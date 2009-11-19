@@ -37,7 +37,6 @@ if isWindows:
    files.append(f)
    f = env.Build('SubstInFile', 'hello.rc', 'hello.rc.in', copy=False, suffix=False, SUBST_DICT_CFG=hellorc_subst)[0]
    files.append(f)
-   files += Glob('*.rc')
    target = 'nphello'
 
 env.Append(CPPDEFINES=cppdefines)
