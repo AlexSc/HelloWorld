@@ -11,8 +11,10 @@ if env['CC'] == 'gcc':
 	optdbgFlags['CCFLAGS'] = ['-g', '-O2']
 	releaseFlags['CCFLAGS'] = ['-O2']
 elif env['CC'] == 'cl':
-	dbgFlags['CCFLAGS'] = ['/Zi', '/Od']
-	optdbgFlags['CCFLAGS'] = ['/Zi', '/O2']
+	dbgFlags['CCFLAGS'] = ['/Od']
+	dbgFlags['PDB'] = '${TARGET}.pdb'
+	optdbgFlags['CCFLAGS'] = ['/O2']
+	optdbgFlags['PDB'] = '${TARGET}.pdb'
 	releaseFlags['CCFLAGS'] = ['/O2']
 
 dbg = Config.Config('dbg', default=True, suffix='_DEBUG', **dbgFlags)
