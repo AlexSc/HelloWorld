@@ -8,7 +8,7 @@
 	<string>HelloWorld Plugin</string>
 	<key>WebPluginMIMETypes</key>
 	<dict>
-		<key>application/x-hello-world</key>
+		<key>${MIME_TYPE}</key>
 		<dict>
 			<key>WebPluginTypeDescription</key>
 			<string>HelloWorld</string>

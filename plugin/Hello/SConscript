@@ -8,18 +8,31 @@ files = Glob('*.cpp')
 
 TOOL_SUBST(env)
 
+MIME_RELEASE = 'application/x-hello-world'
+MIME_DEBUG = 'application/x-hello-world-debug'
+
 hellorc_subst = {}
 hellorc_subst['dbg'] = {'FILE_DESC':'nphello_debug', 'FILE_OPEN_NAME':'nphello_debug'}
-hellorc_subst['dbg'].update({'INTERNAL_NAME':'Hello Debug', 'MIME_TYPE':'application/x-hello-world-debug'})
+hellorc_subst['dbg'].update({'INTERNAL_NAME':'Hello Debug', 'MIME_TYPE':MIME_DEBUG})
 hellorc_subst['dbg'].update({'ORIGINAL_FILE_NAME':'nphello_debug.dll', 'PRODUCT_NAME':'HelloWorld Plugin Debug'})
 
 hellorc_subst['optdbg'] = {'FILE_DESC':'nphello_optimized', 'FILE_OPEN_NAME':'nphello_optimized'}
-hellorc_subst['optdbg'].update({'INTERNAL_NAME':'Hello OptDebug', 'MIME_TYPE':'application/x-hello-world'})
+hellorc_subst['optdbg'].update({'INTERNAL_NAME':'Hello OptDebug', 'MIME_TYPE':MIME_RELEASE})
 hellorc_subst['optdbg'].update({'ORIGINAL_FILE_NAME':'nphello_optimized.dll', 'PRODUCT_NAME':'HelloWorld Plugin OptDebug'})
 
 hellorc_subst['release'] = {'FILE_DESC':'nphello', 'FILE_OPEN_NAME':'nphello'}
-hellorc_subst['release'].update({'INTERNAL_NAME':'Hello', 'MIME_TYPE':'application/x-hello-world'})
+hellorc_subst['release'].update({'INTERNAL_NAME':'Hello', 'MIME_TYPE':MIME_RELEASE})
 hellorc_subst['release'].update({'ORIGINAL_FILE_NAME':'nphello.dll', 'PRODUCT_NAME':'HelloWorld Plugin'})
+
+hellodef_subst = {}
+hellodef_subst['dbg'] = {'LIBNAME':'NPHELLO_DEBUG'}
+hellodef_subst['optdbg'] = {'LIBNAME':'NPHELLO_OPTIMIZED'}
+hellodef_subst['release'] = {'LIBNAME':'NPHELLO'}
+
+infoplist_subst = {}
+infoplist_subst['dbg'] = {'MIME_TYPE':MIME_DEBUG}
+infoplist_subst['optdbg'] = {'MIME_TYPE':MIME_RELEASE}
+infoplist_subst['release'] = {'MIME_TYPE':MIME_RELEASE}
 
 env.Append(CPPPATH=['../inc', '#/lib', '.'], LIBPATH='#/lib')
 isLinux = env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'linux'
@@ -33,22 +46,27 @@ if isOSX:
    cppdefines += ["XP_MACOSX"]
 if isWindows:
    cppdefines += ["WIN32", "_WINDOWS", 'MDCPUCFG="\\"prcpucfg_win32.h"\\"']
-   f = env.Build('SubstInFile', 'hello.def', 'hello.def.in', copy=False, suffix=False, SUBST_DICT_CFG={'dbg':{'LIBNAME':'NPHELLO_DEBUG'}, 'optdbg': {'LIBNAME':'NPHELLO_OPTIMIZED'}, 'release':{'LIBNAME':'NPHELLO'}})[0]
+   f = env.Build('SubstInFile', 'hello.def', 'hello.def.in', copy=False, suffix=False, SUBST_DICT_CFG=hellodef_subst)[0]
    files.append(f)
    f = env.Build('SubstInFile', 'hello.rc', 'hello.rc.in', copy=False, suffix=False, SUBST_DICT_CFG=hellorc_subst)[0]
    files.append(f)
    target = 'nphello'
 
-env.Append(CPPDEFINES=cppdefines)
-ret = env.Build('LoadableModule', target, files, LIBS_CFG=libs[1])
+cppdefine_cfg = {}
+cppdefine_cfg['release'] = cppdefines + ['MIME_TYPE="\\"%s"\\"' % MIME_RELEASE]
+cppdefine_cfg['optdbg'] = cppdefines + ['MIME_TYPE="\\"%s"\\"' % MIME_RELEASE]
+cppdefine_cfg['dbg'] = cppdefines + ['MIME_TYPE="\\"%s"\\"' % MIME_DEBUG]
+
+ret = env.Build('LoadableModule', target, files, LIBS_CFG=libs[1], CPPDEFINES_CFG=cppdefine_cfg)
 
 TOOL_BUNDLE(env)
-if isOSX and False:
+if isOSX:
+   f = env.Build('SubstInFile', 'Info.plist', 'Info.plist.in', copy=False, suffix=False, SUBST_DICT_CFG=infoplist_subst)[0]
    configs = env.subst('${cfg}').split()
    for config in configs:
       config = Config.allConfigs[config]
       env.MakeBundle('Hello' + config.suffix + '.plugin', 'Hello' + config.suffix,
-                     'Info.plist',
+                     'build/' + config.name + '/Info.plist',
                      typecode='BRPL', creator='????',
                      resources="English.lproj")
 

@@ -68,7 +68,7 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs *pFuncs)
 // file in the plugin bundle.  This function is optional on OS X.
 char* NP_GetMIMEDescription()
 {
-   return "application/x-hello-world::Hello World Plugin";
+   return MIME_TYPE"::Hello World Plugin";
 }
 
 // This function is called by the browser on Windows and on OS X.

@@ -17,7 +17,7 @@ def subst_file(target, source, env):
 
    # Substitute
    t = Template(contents)
-   contents = t.substitute(env['SUBST_DICT'])
+   contents = t.safe_substitute(env['SUBST_DICT'])
 
    # Write file
    f = open(target, 'w')
@@ -86,7 +86,7 @@ def TOOL_BUNDLE(env):
          env.Clean(app, bundledir)
 
          env.Install(bundledir+'/Contents/MacOS', app)
-         env.SubstInFile(bundledir+'/Contents/' + info_plist, info_plist,
+         env.SubstInFile(bundledir+'/Contents/Info.plist', info_plist,
                          SUBST_DICT={'EXECUTABLE_NAME':app,
                          'PRODUCT_NAME':app})
 
