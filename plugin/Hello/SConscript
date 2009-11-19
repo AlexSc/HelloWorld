@@ -39,8 +39,6 @@ if isWindows:
    files.append(f)
    files += Glob('*.rc')
    target = 'nphello'
-   
-
 
 env.Append(CPPDEFINES=cppdefines)
 ret = env.Build('LoadableModule', target, files, LIBS_CFG=libs[1])
