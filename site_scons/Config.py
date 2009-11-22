@@ -56,6 +56,8 @@ def Build(environ, command, target, source, copy=True, suffix=True, *args, **kw)
       newFiles = []
       if SCons.Util.is_String(source):
          source = [source]
+      if SCons.Util.is_Dict(source):
+         source = [source]
 
       # Tell SCons to build the files in a build/<cfg> directory
       dirs = []
