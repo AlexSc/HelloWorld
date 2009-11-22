@@ -1,5 +1,6 @@
 from Config import *
 from Bundle import *
+from rez import *
 
 Import('env')
 Import('libs')
@@ -34,6 +35,16 @@ infoplist_subst['dbg'] = {'MIME_TYPE':MIME_DEBUG}
 infoplist_subst['optdbg'] = {'MIME_TYPE':MIME_RELEASE}
 infoplist_subst['release'] = {'MIME_TYPE':MIME_RELEASE}
 
+hellor_osx_subst = {}
+hellor_osx_subst['dbg'] = {'FILE_DESC':'Hello World Debug Plugin', 'FILE_NAME':'Hello World Debug Plugin'}
+hellor_osx_subst['dbg'].update({'MIME_TYPE':MIME_DEBUG, 'MIME_DESC':'Hello World Debug Example'})
+
+hellor_osx_subst['optdbg'] = {'FILE_DESC':'Hello World Optimized Plugin', 'FILE_NAME':'Hello World Optimized Plugin'}
+hellor_osx_subst['optdbg'].update({'MIME_TYPE':MIME_RELEASE, 'MIME_DESC':'Hello World Example'})
+
+hellor_osx_subst['release'] = {'FILE_DESC':'Hello World Plugin', 'FILE_NAME':'Hello World Plugin'}
+hellor_osx_subst['release'].update({'MIME_TYPE':MIME_RELEASE, 'MIME_DESC':'Hello World Example'})
+
 env.Append(CPPPATH=['../inc', '#/lib', '.'], LIBPATH='#/lib')
 isLinux = env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'linux'
 isOSX = env['PLATFORM'] == 'darwin'
@@ -59,15 +70,18 @@ cppdefine_cfg['dbg'] = cppdefines + ['MIME_TYPE="\\"%s"\\"' % MIME_DEBUG]
 
 ret = env.Build('LoadableModule', target, files, LIBS_CFG=libs[1], CPPDEFINES_CFG=cppdefine_cfg)
 
-TOOL_BUNDLE(env)
 if isOSX:
+   TOOL_BUNDLE(env)
+   TOOL_REZ(env)
    f = env.Build('SubstInFile', 'Info.plist', 'Info.plist.in', copy=False, suffix=False, SUBST_DICT_CFG=infoplist_subst)[0]
+   res = env.Build('SubstInFile', 'Hello.r', 'Hello.r.in', copy=False, suffix=False, SUBST_DICT_CFG=hellor_osx_subst)[0]
+   rsrc = env.Build('REZ', 'Hello', res, copy=False, suffix=True)[0]
    configs = env.subst('${cfg}').split()
    for config in configs:
       config = Config.allConfigs[config]
       env.MakeBundle('Hello' + config.suffix + '.plugin', 'Hello' + config.suffix,
                      'build/' + config.name + '/Info.plist',
                      typecode='BRPL', creator='????',
-                     resources="English.lproj")
+                     resources=['English.lproj', rsrc[config.name]])
 
 Return('ret')
