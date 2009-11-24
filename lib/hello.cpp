@@ -9,8 +9,7 @@
 
 #include "hello.h"
 
-
-const char* hello::i_say()
+std::string hello::i_say()
 {
 	return "I don't know why you say goodbye, I say hello";
 }

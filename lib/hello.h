@@ -11,10 +11,13 @@
 #ifndef HELLO_H_
 #define HELLO_H_
 
+#include <string>
+
 class hello
 {
 public:
-	const char* i_say();
+   hello() {}
+	std::string i_say();
 };
 
 #endif
