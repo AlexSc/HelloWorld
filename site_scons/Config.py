@@ -68,15 +68,21 @@ def Build(environ, command, target, source, copy=True, suffix=True, *args, **kw)
             else:
                # If the file isn't specified for this config, skip it.
                continue
-         dir, file = path.split(str(file))
-         newFiles.append(outdir + file)
+         oldFile = str(file)
+         dir, file = path.split(newEnv.subst(str(file)))
+         if path.normpath(dir) == path.normpath(outdir):
+         	dir = ''
+         newFile = outdir + dir.strip('./') + '/' + file
+         if path.normpath(newFile) != path.normpath(oldFile):
+            newEnv.Depends(newFile, oldFile)
+         newFiles.append(newFile)
          if not dir:
             dir = '.'
-         if not dir in dirs and not path.normpath(dir) == path.normpath(outdir):
+         if not dir in dirs:
             dirs.append(dir)
 
       for dir in dirs:
-         newEnv.VariantDir(outdir, dir, duplicate=0)
+         newEnv.VariantDir(outdir + dir.strip('./'), dir, duplicate=0)
 
       if suffix:
          newTarget = target + config.suffix
