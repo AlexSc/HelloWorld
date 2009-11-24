@@ -702,7 +702,9 @@ extern "C" {
 /* plugin meta member functions */
 
 NP_EXPORT(char*)   NP_GetMIMEDescription(void);
+#ifndef XP_MACOSX
 NP_EXPORT(NPError) NP_Initialize(NPNetscapeFuncs*, NPPluginFuncs*);
+#endif
 NP_EXPORT(NPError) NP_Shutdown(void);
 NP_EXPORT(NPError) NP_GetValue(void *future, NPPVariable aVariable, void *aValue);
 
