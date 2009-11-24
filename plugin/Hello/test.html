@@ -1,6 +1,22 @@
-<embed type="application/x-hello-world">
-<script>
-  var embed = document.embeds[0];
-  var result = embed.i_say();
-  alert(result);
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script type="text/javascript">
+
+function init() {
+  var plugin = document.getElementById("plugin");
+  var hw = plugin.hello();
+  if (!hw) {
+    alert("no plugin");
+  }
+
+  alert(hw.iSay());
+}
 </script>
+</head>
+
+<body onload="init()">
+<object type="application/x-hello-world" id="plugin" width="0" height="0"> </object>
+</body>
+</html>
