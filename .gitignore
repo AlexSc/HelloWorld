@@ -7,6 +7,7 @@
 *.dll
 *.lib
 *.res
+parser.out
 cli/hello*
 lib/*.a
 *.pbxuser
@@ -14,5 +15,6 @@ lib/*.a
 lib/build
 cli/build
 plugin/Hello/build/
+plugin/Hello/glue
 plugin/Hello/Hello*
 plugin/Hello/*.plugin/
