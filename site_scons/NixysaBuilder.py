@@ -24,8 +24,8 @@ def TOOL_NIXYSA(env):
       targets += ['$GLUE_DIR/hash', '$GLUE_DIR/parsetab.py']
       return targets, source
 
-   NIXYSA_CMDLINE = ' '.join([env.File('$NIXYSA_DIR/$CODEGEN').abspath,
-                              '--output-dir=' + env.Dir('$GLUE_DIR').abspath,
+   NIXYSA_CMDLINE = ' '.join(['"' + env.File('$NIXYSA_DIR/$CODEGEN').path + '"',
+                              '--output-dir="' + env.Dir('$GLUE_DIR').path + '"',
                               '--generate=npapi',
                               '$SOURCES'])
 

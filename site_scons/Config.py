@@ -79,7 +79,8 @@ def Build(environ, command, target, source, copy=True, suffix=True, *args, **kw)
             newFile = newEnv.File(newFile)
             newFile.add_source(fileNode.sources)
             newFile.builder_set(fileNode.builder)
-            newFile.do_duplicate(fileNode)
+            if newEnv['PLATFORM'] != 'win32':
+               newFile.do_duplicate(fileNode)
          newFiles.append(newFile)
          if not dir:
             dir = '.'

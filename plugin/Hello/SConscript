@@ -62,7 +62,7 @@ if isOSX:
    cppdefines += ["XP_MACOSX", "OS_MACOSX"]
    env.Append(LINKFLAGS='-framework CoreFoundation')
 if isWindows:
-   cppdefines += ["WIN32", "OS_WINDOWS", "_WINDOWS", 'MDCPUCFG="\\"prcpucfg_win32.h"\\"']
+   cppdefines += ["WIN32", "OS_WINDOWS", "NOMINMAX", "_WINDOWS", 'MDCPUCFG="\\"prcpucfg_win32.h"\\"']
    f = env.Build('SubstInFile', 'hello.def', 'hello.def.in', copy=False, suffix=False, SUBST_DICT_CFG=hellodef_subst)[0]
    files.append(f)
    f = env.Build('SubstInFile', 'hello.rc', 'hello.rc.in', copy=False, suffix=False, SUBST_DICT_CFG=hellorc_subst)[0]
