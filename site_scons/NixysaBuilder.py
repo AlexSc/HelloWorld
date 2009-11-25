@@ -25,7 +25,7 @@ def TOOL_NIXYSA(env):
       return targets, source
 
    NIXYSA_CMDLINE = ' '.join([env.File('$NIXYSA_DIR/$CODEGEN').abspath,
-                              '--output-dir=$GLUE_DIR',
+                              '--output-dir=' + env.Dir('$GLUE_DIR').abspath,
                               '--generate=npapi',
                               '$SOURCES'])
 

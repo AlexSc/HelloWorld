@@ -69,12 +69,17 @@ def Build(environ, command, target, source, copy=True, suffix=True, *args, **kw)
                # If the file isn't specified for this config, skip it.
                continue
          oldFile = str(file)
+         fileNode = newEnv.File(file)
          dir, file = path.split(newEnv.subst(str(file)))
          if path.normpath(dir) == path.normpath(outdir):
          	dir = ''
          newFile = outdir + dir.strip('./') + '/' + file
-         if path.normpath(newFile) != path.normpath(oldFile):
-            newEnv.Depends(newFile, oldFile)
+         if path.normpath(newFile) != path.normpath(oldFile) and fileNode.has_builder() \
+            and not newEnv.GetOption('clean'):
+            newFile = newEnv.File(newFile)
+            newFile.add_source(fileNode.sources)
+            newFile.builder_set(fileNode.builder)
+            newFile.do_duplicate(fileNode)
          newFiles.append(newFile)
          if not dir:
             dir = '.'
