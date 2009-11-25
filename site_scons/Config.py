@@ -19,8 +19,12 @@ class Config:
       newEnv.Prepend(**self.opts)
       return newEnv
 
-def Build(environ, command, target, source, copy=True, suffix=True, *args, **kw):
-   if environ['PLATFORM'] == 'win32':
+def _addResBuilder(env):
+   """This adds the Windows Resource Script builder 'RES' to every builder which
+   generates an executable or library output.  This is necessary to get proper
+   output when a .rc file is specified as input, otherwise SCons tries to
+   directly link the .rc file instead of compiling it first."""
+   if env['PLATFORM'] == 'win32':
       ld = SCons.Tool.createLoadableModuleBuilder(environ)
       ld.add_src_builder('RES')
 
@@ -33,6 +37,32 @@ def Build(environ, command, target, source, copy=True, suffix=True, *args, **kw)
       p = SCons.Tool.createProgBuilder(environ)
       p.add_src_builder('RES')
 
+def _getConfigurationEnvironment(env, config, **kw):
+   newEnv = config.modenv(env)
+   cleanDict = {}
+   for key in kw.keys():
+      if key.endswith('_CFG'):
+         cleanDict[key[:-4]] = kw[key][config.name]
+      else:
+         cleanDict[key] = kw[key]
+
+   return (newEnv, cleanDict)
+
+def _getConfigFile(file, cfg):
+   if not SCons.Util.is_Dict(file):
+      return file
+
+   return file[cfg] if cfg in file else None
+
+def _handleCustomDependencies(env, command, file, *args, **kw):
+   deps = []
+   if 'CUSTOM_DEPS' in env:
+      deps = env['CUSTOM_DEPS']
+   if command in deps:
+      deps[command](env, file, *args, **kw)
+
+def Build(environ, command, target, source, copy=True, suffix=True, *args, **kw):
+   _addResBuilder(environ)
    configs = environ.subst('${cfg}').split()
    fullPath = {}
    cleanName = {}
@@ -42,58 +72,64 @@ def Build(environ, command, target, source, copy=True, suffix=True, *args, **kw)
       config = Config.allConfigs[config]
 
       # Insert the configuration options
-      newEnv = config.modenv(environ)
+      newEnv, cleanDict = _getConfigurationEnvironment(environ, config, **kw)
 
-      cleanDict = {}
-      # Do config substitution on incoming construction variables
-      for key in kw.keys():
-         if key.endswith('_CFG'):
-            cleanDict[key[:-4]] = kw[key][config.name]
-         else:
-            cleanDict[key] = kw[key]
-
-      outdir = 'build/' + config.name + '/'
-      newFiles = []
-      if SCons.Util.is_String(source):
-         source = [source]
-      if SCons.Util.is_Dict(source):
+      # Make sure source is a list
+      if not SCons.Util.is_List(source):
          source = [source]
 
       # Tell SCons to build the files in a build/<cfg> directory
-      dirs = []
+      outdir = 'build/' + config.name + '/'
+      newFiles = []
       for file in source:
-         if SCons.Util.is_Dict(file):
-            if config.name in file:
-               file = file[config.name]
-            else:
-               # If the file isn't specified for this config, skip it.
-               continue
-         oldFile = str(file)
+         file = _getConfigFile(file, config.name)
+         if not file:
+            continue
+
          fileNode = newEnv.File(file)
-         dir, file = path.split(newEnv.subst(str(file)))
+         file = str(file)
+         dir, fileName = path.split(newEnv.subst(file))
+
+         # We may get some files which are already in the output directory but
+         # need further processing.  In those cases, don't put them in
+         # build/<cfg>/build/<cfg> :)
          if path.normpath(dir) == path.normpath(outdir):
-         	dir = ''
-         newFile = outdir + dir.strip('./') + '/' + file
-         if path.normpath(newFile) != path.normpath(oldFile) and fileNode.has_builder() \
-            and not newEnv.GetOption('clean'):
-            newFile = newEnv.File(newFile)
-            newFile.add_source(fileNode.sources)
-            newFile.builder_set(fileNode.builder)
-            if newEnv['PLATFORM'] != 'win32':
-               newFile.do_duplicate(fileNode)
+            dir = ''
+         outdirdir = outdir + dir.strip('./')
+         newFile = outdirdir + '/' + fileName
+
+         # Here there be dragons, of sorts.
+         #
+         # In the event that the input file *is* being built, but *is not* being
+         # built into our VariantDir, SCons gets horribly confused.  See,
+         # has_builder() (and therefore is_derived()) is *also* used as the flag
+         # for "I should be in the VariantDir even if duplicate is 0, so don't
+         # go looking anywhere else for me".  So if we create a new
+         # build/<cfg>/file here out of thin air, SCons *won't* go to the source
+         # file because it thinks it already should be in build/<cfg>/file
+         #
+         # At one point I had done some remarkably stupid things here, which
+         # worked, if only just (basically saying that there is a file at
+         # build/<cfg>/file which has the same sources and builders as file, but
+         # is a symlink to file).  The much simpler solution is to simply copy
+         # file to build/<cfg>/file ourselves.  This will create a file at
+         # build/<cfg>/file and mark it as depending on file.
+         if path.normpath(newFile) != path.normpath(file) and fileNode.is_derived():
+            newEnv.Command(newFile, fileNode, Copy('$TARGET', '$SOURCE'))
+
          newFiles.append(newFile)
+
+         # SCons doesn't like pointing a VariantDir at the empty string.
          if not dir:
             dir = '.'
-         if not dir in dirs:
-            dirs.append(dir)
 
-      for dir in dirs:
-         newEnv.VariantDir(outdir + dir.strip('./'), dir, duplicate=0)
+         # New directory, new Variant Dir
+         newEnv.VariantDir(outdirdir, dir, duplicate=0)
 
-      if suffix:
-         newTarget = target + config.suffix
-      else:
-         newTarget = target
+      # Add the suffix if applicable
+      newTarget = target + config.suffix if suffix else target
+      # Actually build the thing.  Returns a list of built targets, we assume
+      # that there is only one element (of importance at least) in the list.
       p = newEnv.DoUniversal(command, outdir + newTarget, newFiles, *args, 
                              **cleanDict)
 
@@ -107,11 +143,10 @@ def Build(environ, command, target, source, copy=True, suffix=True, *args, **kw)
 
       # Save the unadorned name of the product to pass into other build comamnds
       cleanName[config.name] = newTarget
-      
-      if 'CUSTOM_DEPS' in newEnv:
-		deps = newEnv['CUSTOM_DEPS']
-		if command in deps:
-			deps[command](newEnv, fullPath[config.name], *args, **cleanDict)
+
+      # Handle any custom dependency tracking that may be necessary once we have
+      # the full adorned product name.
+      _handleCustomDependencies(newEnv, command, fullPath[config.name], *args, **cleanDict)
 
    return fullPath, cleanName
 
