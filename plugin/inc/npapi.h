@@ -49,6 +49,11 @@
 #endif
 
 #include "prtypes.h"
+
+#ifdef WIN32
+#include <Windows.h>
+#endif
+
 /* Copied from xp_core.h */
 /* removed #ifdef for hpux defined in /usr/include/model.h */
 #ifndef _INT16
