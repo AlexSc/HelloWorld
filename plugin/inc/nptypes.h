@@ -48,6 +48,8 @@
    */
   typedef int int32_t;
   typedef unsigned int uint32_t;
+  typedef int16 int16_t;
+  typedef uint16 uint16_t;
 #elif defined(_AIX) || defined(__sun) || defined(__osf__) || defined(IRIX) || defined(HPUX)
   /*
    * AIX and SunOS ship a inttypes.h header that defines [u]int32_t,
