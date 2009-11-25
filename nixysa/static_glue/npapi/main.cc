@@ -66,8 +66,8 @@ extern "C" {
     return NPERR_NO_ERROR;
   }
 
-  NPError NPP_New(NPMIMEType pluginType, NPP instance, uint16_t mode,
-                  int16_t argc, char *argn[], char *argv[],
+  NPError NP_LOADDS NPP_New(NPMIMEType pluginType, NPP instance, uint16 mode,
+                  int16 argc, char *argn[], char *argv[],
                   NPSavedData *saved) {
     glue::InitializeGlue(instance);
     NPObject *object = glue::CreateStaticNPObject(instance);
@@ -75,7 +75,7 @@ extern "C" {
     return NPERR_NO_ERROR;
   }
 
-  NPError NPP_Destroy(NPP instance, NPSavedData **save) {
+  NPError NP_LOADDS NPP_Destroy(NPP instance, NPSavedData **save) {
     NPObject *object = static_cast<NPObject*>(instance->pdata);
     if (object) {
       NPN_ReleaseObject(object);
@@ -84,7 +84,7 @@ extern "C" {
     return NPERR_NO_ERROR;
   }
 
-  NPError NPP_GetValue(NPP instance, NPPVariable variable, void *value) {
+  NPError NP_LOADDS NPP_GetValue(NPP instance, NPPVariable variable, void *value) {
     switch (variable) {
       case NPPVpluginScriptableNPObject: {
         void **v = static_cast<void **>(value);
@@ -103,44 +103,44 @@ extern "C" {
     return NPERR_NO_ERROR;
   }
 
-  NPError NPP_SetValue(NPP instance, NPNVariable variable, void *value) {
+  NPError NP_LOADDS NPP_SetValue(NPP instance, NPNVariable variable, void *value) {
     return NPERR_GENERIC_ERROR;
   }
 
 
-  NPError NPP_SetWindow(NPP instance, NPWindow *window) {
+  NPError NP_LOADDS NPP_SetWindow(NPP instance, NPWindow *window) {
     return NPERR_NO_ERROR;
   }
 
-  void NPP_StreamAsFile(NPP instance, NPStream *stream, const char *fname) {
+  void NP_LOADDS NPP_StreamAsFile(NPP instance, NPStream *stream, const char *fname) {
   }
 
-  int16_t NPP_HandleEvent(NPP instance, void *event) {
+  int16 NPP_HandleEvent(NPP instance, void *event) {
     return 0;
   }
 
-  NPError NPP_NewStream(NPP instance, NPMIMEType type, NPStream *stream,
-                        NPBool seekable, uint16_t *stype) {
+  NPError NP_LOADDS NPP_NewStream(NPP instance, NPMIMEType type, NPStream *stream,
+                        NPBool seekable, uint16 *stype) {
     return NPERR_NO_ERROR;
   }
 
-  NPError NPP_DestroyStream(NPP instance, NPStream *stream, NPReason reason) {
+  NPError NP_LOADDS NPP_DestroyStream(NPP instance, NPStream *stream, NPReason reason) {
     return NPERR_NO_ERROR;
   }
 
-  int32_t NPP_WriteReady(NPP instance, NPStream *stream) {
+  int32 NP_LOADDS NPP_WriteReady(NPP instance, NPStream *stream) {
     return 0;
   }
 
-  int32_t NPP_Write(NPP instance, NPStream *stream, int32_t offset, int32_t len,
+  int32 NP_LOADDS NP_LOADDS NPP_Write(NPP instance, NPStream *stream, int32 offset, int32 len,
                     void *buffer) {
     return 0;
   }
 
-  void NPP_Print(NPP instance, NPPrint *platformPrint) {
+  void NP_LOADDS NPP_Print(NPP instance, NPPrint *platformPrint) {
   }
 
-  void NPP_URLNotify(NPP instance, const char *url, NPReason reason,
+  void  NP_LOADDS NPP_URLNotify(NPP instance, const char *url, NPReason reason,
                      void *notifyData) {
   }
 }  // extern "C"

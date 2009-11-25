@@ -183,7 +183,7 @@ const char* NP_LOADDS NPN_UserAgent(NPP instance) {
   return g_browser_functions.uagent(instance);
 }
 
-void* NP_LOADDS NPN_MemAlloc(uint32_t size) {
+void* NP_LOADDS NPN_MemAlloc(uint32 size) {
   return g_browser_functions.memalloc(size);
 }
 
