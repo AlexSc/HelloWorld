@@ -23,6 +23,8 @@ Linux: None.  All information is extracted via NP calls.  NP_GetValue will be ca
 
 OS X: Metadata is stored in an Info.plist file in the plugin bundle.  WebPluginName sets the name of the plugin, WebPluginDescription sets the description of the plugin.  WebPluingMIMETypes is a dictionary whose keys are mime types (e.g. application/x-hello-world" and whose values are another dictionary with the key "WebPluginTypeDescription" and the value of that key is the description for the mime type.  The CFBundlePackageType must be BRPL.
 
+Firefox 3.0 expects metadata to be stored in a .rsrc, which is a .r file compiled by rez.  It will ignore the Info.plist file.
+
 Plugin Initialization:
 Windows:
 NP_Initialize(NPNetscapeFuncs *pFuncs);
@@ -32,7 +34,7 @@ Linux:
 NP_Initialize(NPNetscapeFuncs *pInFuncs, NPPluginFuncs *pOutFuncs);
 
 OS X:
-NP_Initialize(NPNetscapeFuncs *pInFuncs, NPPluginFuncs *pOutFuncs); - BUT DO NOT USE pOutFuncs!  This signature is required due to a bug in the SDK
+NP_Initialize(NPNetscapeFuncs *pInFuncs)
 NP_GetEntryPoints(NPPluginFuncs *pFuncs)
 
 Thus far, all other aspects of plugin development are crossplatform.

@@ -11,7 +11,7 @@ HelloWorld contains a set of custom SCons functionality designed to suit the nee
 2) The Build method handles configuration substitution, outputting intermediary build products in a subdirectory, and copying final build products into the root directory.  The Build method can perform more in depth configuration substitutions for construction environment variables than Config alone.  Any variable whose name ends in _CFG is assumed to be a dictionary whose keys are the names of supported configurations and whose value should be the appropriate value to use for that configuration.  e.g.
 LIBS_CFG={'dbg': debugLib, 'release':releaseLib} will set LIBS to debugLib if the 'dbg' configuration is active.
 
-3) The DoUniversal method handles compiling OS X binaries for ppc, i386, and x86_64 architectures and linking them into a universal binary.  Build uses DoUniversal behind the scenes.
+3) The DoUniversal method handles compiling OS X binaries for ppc, i386, and x86_64 architectures and linking them into a universal binary.  Build uses DoUniversal behind the scenes.  You can use the arch variable to specific which architectures to build, e.g. arch=i386 will only build the i386 architecture.  The arch variable defaults to 'all' and builds ppc, i386, and x86_64 architectures.
 
 4) The MakeBundle method will take an input binary, bundle name, path to an  Info.plist file, optional typecode and creator flags, and a list of paths to copy into the <bundle>/Resouces directory and create an OS X package based on that.  It will also fill in ${EXECUTABLE_NAME} and ${PRODUCT_NAME} variables in the Info.plist with the name of the binary
 
@@ -20,6 +20,4 @@ LIBS_CFG={'dbg': debugLib, 'release':releaseLib} will set LIBS to debugLib if th
 Known issues with custom functionality:
 Build will only substitute variables which have been passed directly to it.  It will not check for _CFG variables on the given Environment object.
 
-DoUniversal always compiles ppc, i386, and x86_64 binaries.  A system to select which architectures should be built will be implemented eventually.
-
-MakeBundle does not allow any further substitution in the incoming Info.plist file
+MakeBundle does not allow any further substitution in the incoming Info.plist file.  Use the SubstInFile builder to substitution before passing Info.plist into MakeBundle.
