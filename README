@@ -1,0 +1,27 @@
+This is an example of a static lib which can compile into a standard command
+line application or to an NPAPI plugin which exposes the interface of the
+static lib.  It is more or less completely self contained, though in addition
+to a standard sane dev environment (gcc on Linux/OS X, some version of VC++
+and the MS Platform SDK on Windows) you will need
+
+1) Python 2.x.  This project has been tested with 2.5.x and 2.6.x.
+2) SCons 1.2.0 or later.  This project has been tested with SCons 1.2.0 stable
+and SCons 1.2.0.d20090919. (http://scons.org)
+3) On Windows, you will need the Python for Windows Extensions
+(http://sourceforge.net/projects/pywin32/).
+
+After installing all dependencies you can build the project by running `scons`
+in the root level directory (you know, the one that this file is in).  By
+default that will build the library, cli app, and NPAPI plugin in a release
+configuration.
+
+For more information on how to create a crossplatform NPAPI plugin, see
+Docs/XPlatform Plugin.txt, and then be very very happy that this example
+takes care of all the described details for you.
+
+For more information on the options available to the build scripts used
+in this example and the additions made to SCons in site_scons/, see
+Docs/SCons Notes.txt.
+
+If you woud like to be my personal hero, make this sample work in
+Internet Explorer.
